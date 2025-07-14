@@ -8,7 +8,7 @@ import java.net.http.HttpResponse;
 
 public class ConsumoAPI {
 
-    public static String obtenerDatos(String url){
+    public  String  obtenerDatos(String url){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -17,11 +17,10 @@ public class ConsumoAPI {
         try {
             response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Estado devuelto por la API: " + response.statusCode());
         String json = response.body();
         return json;
     }
