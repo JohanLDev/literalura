@@ -72,4 +72,9 @@ public class Libro {
     public void setNumeroDeDescargas(Integer numeroDeDescargas) {
         this.numeroDeDescargas = numeroDeDescargas;
     }
+
+    @Override
+    public String toString() {
+        return titulo;
+    }
 }

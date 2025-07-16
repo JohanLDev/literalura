@@ -8,7 +8,9 @@ import com.example.literalura.service.ConsumoAPI;
 import com.example.literalura.service.ConvierteDatos;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Scanner;
 
 /**
@@ -42,20 +44,35 @@ public class Principal {
             System.out.println("""
                     Seleccione una opción: 
                     1) Buscar libro por título
-                    2) Sali
+                    2) Listar libros registrados
+                    3) Listar autores registrados
+                    4) Listar autores vivos en un determinado año
+                    5) Listar libros por idioma
+                    0) Salir
                     
                     """);
             int opcion = teclado.nextInt();
             teclado.nextLine();
 
             switch (opcion){
-                case 1:
-                    buscarLibro();
-                    terminar = true;
-                    break;
-                case 2:
+                case 0:
                     System.out.println("Hasta luego...");
                     terminar = true;
+                    break;
+                case 1:
+                    buscarLibro();
+                    break;
+                case 2:
+                    listarLibrosRegistrados();
+                    break;
+                case 3:
+                    listarAutoresRegistrados();
+                    break;
+                case 4:
+                    listarAutoresVivosEnAnio();
+                    break;
+                case 5:
+                    listarLibrosPorIdioma();
                     break;
                 default:
                     System.out.println("Seleccione una opción valida.");
@@ -131,14 +148,70 @@ public class Principal {
         }
     }
 
+
+    private void listarLibrosRegistrados(){
+        libroRepository.findAll().forEach(this::mostrarDatosDeLibro);
+    }
+
+    private void listarAutoresRegistrados(){
+        autorRepository.findAll().forEach(this::mostrarDatosDeAutor);
+    }
+
+    private void listarAutoresVivosEnAnio(){
+        System.out.println("Ingrese el año vivo de autor(es) que desea buscar:");
+        int anio = teclado.nextInt();
+        teclado.nextLine();
+
+        autorRepository.obtenerAutoresVivosEnAnio(anio).forEach(this::mostrarDatosDeAutor);
+    }
+
+    private void listarLibrosPorIdioma(){
+        System.out.println("Seleccione el idioma del cual obtener libros:");
+        List<Lenguaje> lenguajes = lenguajeRepository.findAll();
+
+        lenguajes.forEach( l->{
+            System.out.println(l.getId() + " " + l.getIdioma());
+        });
+
+        int id = teclado.nextInt();
+        teclado.nextLine();
+
+        Optional<Lenguaje> lenguajeSeleccionado = lenguajes.stream()
+                .filter(l -> {
+                    boolean coincide = l.getId() == id;
+                    return coincide;
+                })
+                .findFirst();
+
+        if(lenguajeSeleccionado.isEmpty()){
+            System.out.println("No has seleccionado un idioma valido");
+            return;
+        }
+
+        libroRepository.obtenerLibrosPorIdioma(lenguajeSeleccionado.get().getIdioma()).forEach(this::mostrarDatosDeLibro);
+    }
+
     private void mostrarDatosDeLibro(Libro libro){
         System.out.println("*************LIBRO***********");
         System.out.println("Título: " + libro.getTitulo());
         System.out.println("Autor: " + libro.getAutor().getNombre());
         System.out.println("Idioma: " + libro.getLenguaje().getIdioma());
         System.out.println("Número de descargas: " + libro.getNumeroDeDescargas());
-        System.out.println("*****************************");
+        System.out.println("*****************************\n\n");
     }
-    
+
+    private void mostrarDatosDeAutor(Autor autor){
+        System.out.println("*************AUTOR***********");
+        System.out.println("Nombre: " + autor.getNombre());
+        System.out.println("Año Nacimiento: " + autor.getAnioNacimiento());
+        System.out.println("Año Fallecimiento: " + autor.getAnioMuerte());
+        System.out.println("Libros: " + autor.getLibros());
+        System.out.println("*****************************\n\n");
+    }
+
+
+
+
+
 }
 
