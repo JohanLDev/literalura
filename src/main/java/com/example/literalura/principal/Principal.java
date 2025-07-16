@@ -17,10 +17,10 @@ import java.util.Scanner;
  * @author Johan Rivera
  */
 public class Principal {
-    private Scanner teclado = new Scanner(System.in);
-    private static String URL_BASE = "https://gutendex.com";
-    private ConsumoAPI consumoAPI = new ConsumoAPI();
-    private ConvierteDatos convierteDatos = new ConvierteDatos();
+    private final Scanner teclado = new Scanner(System.in);
+    private static final String URL_BASE = "https://gutendex.com";
+    private final ConsumoAPI consumoAPI = new ConsumoAPI();
+    private final ConvierteDatos convierteDatos = new ConvierteDatos();
     private LibroRepository libroRepository;
     private AutorRepository autorRepository;
     private LenguajeRepository lenguajeRepository;
@@ -95,6 +95,10 @@ public class Principal {
                         System.out.println("Texto coincide con: " + nombreLibro);
                         System.out.println(d.titulo());
                     }
+
+                    // se valida que si no existe entonces busque otro libro
+                    coincide = libroRepository.findByTitulo(d.titulo()) == null;
+
                     return coincide;
                 })
                 .findFirst();
@@ -108,15 +112,12 @@ public class Principal {
                 return;
             }
 
-
-
             Autor autor = autorRepository.findByNombre(libro.getAutor().getNombre());
             if (autor != null) {
                 libro.setAutor(autor);
             } else {
                 autorRepository.save(libro.getAutor());
             }
-
 
             Lenguaje lenguaje = lenguajeRepository.findByIdioma(libro.getLenguaje().getIdioma());
             if (lenguaje != null) {
@@ -126,14 +127,18 @@ public class Principal {
             }
 
             libroRepository.save(libro);
+            mostrarDatosDeLibro(libro);
         }
-
     }
 
-
-
-
-
-
+    private void mostrarDatosDeLibro(Libro libro){
+        System.out.println("*************LIBRO***********");
+        System.out.println("Título: " + libro.getTitulo());
+        System.out.println("Autor: " + libro.getAutor().getNombre());
+        System.out.println("Idioma: " + libro.getLenguaje().getIdioma());
+        System.out.println("Número de descargas: " + libro.getNumeroDeDescargas());
+        System.out.println("*****************************");
+    }
+    
 }
 
