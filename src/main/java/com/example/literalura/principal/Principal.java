@@ -166,11 +166,11 @@ public class Principal {
     }
 
     private void listarLibrosPorIdioma(){
-        System.out.println("Seleccione el idioma del cual obtener libros:");
         List<Lenguaje> lenguajes = lenguajeRepository.findAll();
 
+        System.out.println("Seleccione el idioma del cual obtener libros: ");
         lenguajes.forEach( l->{
-            System.out.println(l.getId() + " " + l.getIdioma());
+            System.out.println(l.getId() + ") " + l.getIdioma());
         });
 
         int id = teclado.nextInt();
